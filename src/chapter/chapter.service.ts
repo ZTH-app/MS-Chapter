@@ -31,7 +31,7 @@ export class ChapterService {
         return await Promise.resolve(this.chapterModel.findByIdAndDelete(id).exec());
     }
 
-    async update(id: string, updateChapter: Chapter): Promise<string> {
+    async update(id: string, updateChapter: Chapter): Promise<void> {
         await this.chapterModel.updateOne(
             {
                 _id: id,
@@ -39,7 +39,6 @@ export class ChapterService {
             updateChapter,
         )
         .exec();
-        return "Chapitre modifié"
     }
     
 }
