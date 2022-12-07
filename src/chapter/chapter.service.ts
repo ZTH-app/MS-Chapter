@@ -1,25 +1,23 @@
-import { Controller } from "@nestjs/common";
+import { Controller, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { ChapterRepository } from "./repo/chapter.repo";
 import { Chapter, ChapterDocument } from "./schemas/chapter.schema";
 
-@Controller()
+@Injectable()
 export class ChapterService {
-    constructor(
-        @InjectModel(Chapter.name) private chapterModel: Model<ChapterDocument>,
-    ) {}
+    constructor(private chapterRepositry: ChapterRepository) {}
 
-    async create(chapter: Chapter) {
-        const createdChapter = new this.chapterModel(chapter);
-        return createdChapter.save();
+    async create(chapter: Chapter): Promise<Chapter> {
+        return await this.chapterRepositry.create(chapter);
     }
 
     async findAll(): Promise<Chapter[]> {
-        return this.chapterModel.find().exec();
+        return this.chapterRepositry.findAll();
     }
 
     async findById(id: string): Promise<Chapter> {
-        let chapter: Chapter = await Promise.resolve(this.chapterModel.findById(id).exec());
+        let chapter: Chapter = await this.chapterRepositry.findById(id);
         return {
             title: chapter.title,
             description: chapter.description,
@@ -28,17 +26,18 @@ export class ChapterService {
     }
 
     async deleteById(id: string): Promise<Chapter> {
-        return await Promise.resolve(this.chapterModel.findByIdAndDelete(id).exec());
+        return await this.chapterRepositry.deleteById(id);
     }
 
-    async update(id: string, updateChapter: Chapter): Promise<void> {
-        await this.chapterModel.updateOne(
-            {
-                _id: id,
-            },
-            updateChapter,
-        )
-        .exec();
+    async update(id: string, updateChapter: Chapter): Promise<string> {
+        // await this.chapterModel.updateOne(
+        //     {
+        //         _id: id,
+        //     },
+        //     updateChapter,
+        // )
+        // .exec();
+        await this.chapterRepositry.update(id, updateChapter);
+        return "Chapitre modfifié"
     }
-    
 }
